@@ -13,6 +13,9 @@ namespace CIF_DABLEU.DataAccess.Repositories
         private readonly ApplicationDbContext _context;
         public IProductRepository Product { get; private set; }
         public IUserRepository User { get; private set; }
+        public ICustomerRepository Customer { get; private set; }
+        public ISaleInvoiceRepository SaleInvoice { get; private set; }
+        public ISaleInvoiceDetailRepository SaleInvoiceDetail { get; private set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -20,6 +23,9 @@ namespace CIF_DABLEU.DataAccess.Repositories
             Product = new ProductRepository(_context);
             // Aquí instanciaremos los otros repositorios
             User = new UserRepository(_context);
+            Customer = new CustomerRepository(_context);
+            SaleInvoice = new SaleInvoiceRepository(_context);
+            SaleInvoiceDetail = new SaleInvoiceDetailRepository(_context);
         }
 
         public async Task<int> SaveAsync()

@@ -52,16 +52,22 @@ namespace CIF_DABLEU.UI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserRepository, UserRepository>();//Necesario para UnitOfWork
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ISaleInvoiceRepository, SaleInvoiceRepository>();
+            services.AddScoped<ISaleInvoiceDetailRepository, SaleInvoiceDetailRepository>();
 
             // 3. Capa BusinessLogic (Servicios)
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
 
             // 4. Formularios de la UI
             // Los formularios suelen ser transitorios (se crea uno nuevo cada vez que se necesita).
             services.AddTransient<Form1>();
             services.AddTransient<LoginForm>();
             services.AddTransient<RegisterForm>();
+            services.AddTransient<InvoiceForm>();
         }
     }
 }

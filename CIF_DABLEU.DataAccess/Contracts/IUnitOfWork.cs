@@ -11,6 +11,9 @@ namespace CIF_DABLEU.DataAccess.Contracts
         IProductRepository Product { get; }
         // Agregaremos más repositorios aquí: ICustomerRepository, ISaleInvoiceRepository, etc.
         IUserRepository User { get; } 
+        ICustomerRepository Customer { get; }
+        ISaleInvoiceRepository SaleInvoice { get; }
+        ISaleInvoiceDetailRepository SaleInvoiceDetail { get; }
 
         Task<int> SaveAsync();
     }
