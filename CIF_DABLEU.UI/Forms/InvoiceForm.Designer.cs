@@ -39,6 +39,7 @@
             dgvInvoiceDetails = new DataGridView();
             lblTotal = new Label();
             btnCreateInvoice = new Button();
+            btnExportPdf = new Button();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numQuantity).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvProducts).BeginInit();
@@ -151,11 +152,22 @@
             btnCreateInvoice.UseVisualStyleBackColor = true;
             btnCreateInvoice.Click += btnCreateInvoice_Click;
             // 
+            // btnExportPdf
+            // 
+            btnExportPdf.Location = new Point(521, 555);
+            btnExportPdf.Name = "btnExportPdf";
+            btnExportPdf.Size = new Size(90, 39);
+            btnExportPdf.TabIndex = 2;
+            btnExportPdf.Text = "Exportar a PDF";
+            btnExportPdf.UseVisualStyleBackColor = true;
+            btnExportPdf.Click += btnExportPdf_Click;
+            // 
             // InvoiceForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(725, 606);
+            Controls.Add(btnExportPdf);
             Controls.Add(btnCreateInvoice);
             Controls.Add(lblTotal);
             Controls.Add(groupBox2);
@@ -187,5 +199,6 @@
         private DataGridView dgvInvoiceDetails;
         private Label lblTotal;
         private Button btnCreateInvoice;
+        private Button btnExportPdf;
     }
 }

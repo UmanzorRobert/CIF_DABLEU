@@ -9,7 +9,8 @@ using CIF_DABLEU.BusinessLogic.Contracts;
 using CIF_DABLEU.Entities.Models;
 using System.ComponentModel; // Necesario para BindingList
 using System.Data;
-using System.Globalization; // Necesario para formato de moneda
+using System.Globalization;
+using CIF_DABLEU.BusinessLogic.Services; // Necesario para formato de moneda
 
 namespace CIF_DABLEU.UI.Forms
 {
@@ -19,6 +20,8 @@ namespace CIF_DABLEU.UI.Forms
         private readonly IProductService _productService;
         private readonly ICustomerService _customerService;
         private readonly IInvoiceService _invoiceService;
+        private int? _lastCreatedInvoiceId = null;
+        private readonly IExportService _exportService;
 
         // "Carrito de compras" local usando una clase anidada para mejor visualización
         private class CartItemViewModel
@@ -33,12 +36,13 @@ namespace CIF_DABLEU.UI.Forms
         // Usamos BindingList porque notifica automáticamente al DataGridView cuando hay cambios.
         private readonly BindingList<CartItemViewModel> _shoppingCart;
 
-        public InvoiceForm(IProductService productService, ICustomerService customerService, IInvoiceService invoiceService)
+        public InvoiceForm(IProductService productService, ICustomerService customerService, IInvoiceService invoiceService, IExportService exportService)
         {
             InitializeComponent();
             _productService = productService;
             _customerService = customerService;
             _invoiceService = invoiceService;
+            _exportService = exportService;
 
             _shoppingCart = new BindingList<CartItemViewModel>();
         }
@@ -190,10 +194,18 @@ namespace CIF_DABLEU.UI.Forms
             // 4. Llamar al servicio y manejar el resultado
             try
             {
-                await _invoiceService.CreateInvoiceAsync(customerId, invoiceDetailsDto);
-                MessageBox.Show("¡Factura creada con éxito!", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                ResetForm();
-                await LoadProductsAsync(); // Recargar productos para ver el stock actualizado
+                //await _invoiceService.CreateInvoiceAsync(customerId, invoiceDetailsDto);
+                //MessageBox.Show("¡Factura creada con éxito!", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //ResetForm();
+                //await LoadProductsAsync(); // Recargar productos para ver el stock actualizado
+                // La llamada al servicio devuelve la nueva factura creada
+                var createdInvoice = await _invoiceService.CreateInvoiceAsync(customerId, invoiceDetailsDto);
+
+                _lastCreatedInvoiceId = createdInvoice.Id; // Guardamos el ID
+                btnExportPdf.Enabled = true; // Habilitamos el botón
+
+                MessageBox.Show($"¡Factura #{createdInvoice.Id} creada con éxito!", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // ...
             }
             catch (Exception ex)
             {
@@ -206,6 +218,37 @@ namespace CIF_DABLEU.UI.Forms
             _shoppingCart.Clear();
             cmbCustomers.SelectedIndex = 0;
             UpdateTotals();
+        }
+
+        private async void btnExportPdf_Click(object sender, EventArgs e)
+        {
+            if (_lastCreatedInvoiceId == null)
+            {
+                MessageBox.Show("Primero debe crear una factura para poder exportarla.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                var fileBytes = await _exportService.ExportInvoiceToPdfAsync(_lastCreatedInvoiceId.Value);
+
+                var saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "Archivo PDF (*.pdf)|*.pdf",
+                    Title = "Guardar Factura en PDF",
+                    FileName = $"Factura_{_lastCreatedInvoiceId.Value:D6}.pdf"
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    await File.WriteAllBytesAsync(saveFileDialog.FileName, fileBytes);
+                    MessageBox.Show("Factura exportada a PDF con éxito.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar la factura a PDF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

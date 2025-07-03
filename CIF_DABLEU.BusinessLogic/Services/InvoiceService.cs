@@ -15,7 +15,7 @@ namespace CIF_DABLEU.BusinessLogic.Services
 
         public InvoiceService(IUnitOfWork unitOfWork) { _unitOfWork = unitOfWork; }
 
-        public async Task CreateInvoiceAsync(int customerId, IEnumerable<InvoiceDetailDto> details)
+        public async Task<SaleInvoice> CreateInvoiceAsync(int customerId, IEnumerable<InvoiceDetailDto> details)
         {
             // --- INICIO DE LA TRANSACCIÓN (implícita por Unit of Work) ---
 
@@ -63,6 +63,8 @@ namespace CIF_DABLEU.BusinessLogic.Services
             // 4. Guardar todos los cambios
             await _unitOfWork.SaveAsync();
 
+            // 5. Devolver el objeto de la factura recién creada
+            return invoiceHeader;
             // --- FIN DE LA TRANSACCIÓN ---
         }
     }

@@ -11,6 +11,9 @@ namespace CIF_DABLEU.DataAccess.Contracts
     {
         // Aquí podríamos agregar métodos específicos para productos en el futuro
         // Por ejemplo: Task<IEnumerable<Product>> GetProductsWithLowStockAsync(int threshold);
+        Task<decimal> GetTotalSalesAsync();
+        Task<IEnumerable<object>> GetTopSellingProductsAsync(int count);
+        Task<SaleInvoice?> GetByIdWithDetailsAsync(int invoiceId);
     }
 }
 

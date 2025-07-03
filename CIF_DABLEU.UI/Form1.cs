@@ -1,4 +1,5 @@
 using CIF_DABLEU.BusinessLogic.Contracts;
+using CIF_DABLEU.BusinessLogic.Services;
 using CIF_DABLEU.DataAccess.Contracts;
 using CIF_DABLEU.DataAccess.Repositories;
 using CIF_DABLEU.UI.Forms;
@@ -10,13 +11,15 @@ namespace CIF_DABLEU.UI
     {
         private readonly IProductService _productService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IExportService _exportService;
 
         // El IProductService es inyectado aquí automáticamente
-        public Form1(IProductService productService, IUnitOfWork unitOfWork)
+        public Form1(IProductService productService, IUnitOfWork unitOfWork, IExportService exportService)
         {
             InitializeComponent();
             _productService = productService;
             _unitOfWork = unitOfWork;
+            _exportService = exportService;
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -85,6 +88,37 @@ namespace CIF_DABLEU.UI
             // Program.ServiceProvider debe ser accesible. Si no, inyecta IServiceProvider en Form1
             var invoiceForm = Program.ServiceProvider.GetRequiredService<InvoiceForm>();
             invoiceForm.ShowDialog();
+        }
+
+        private async void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var fileBytes = await _exportService.ExportProductsToExcelAsync();
+
+                var saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "Archivo Excel (*.xlsx)|*.xlsx",
+                    Title = "Guardar Inventario de Productos",
+                    FileName = $"Inventario_{DateTime.Now:yyyyMMdd}.xlsx"
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    await File.WriteAllBytesAsync(saveFileDialog.FileName, fileBytes);
+                    MessageBox.Show("Archivo Excel exportado con éxito.", "Éxito");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error");
+            }
+        }
+
+        private void btnViewDashboard_Click(object sender, EventArgs e)
+        {
+            var dashboardForm = Program.ServiceProvider.GetRequiredService<DashboardForm>();
+            dashboardForm.ShowDialog();
         }
     }
 }

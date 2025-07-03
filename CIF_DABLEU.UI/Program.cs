@@ -61,6 +61,8 @@ namespace CIF_DABLEU.UI
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<IExportService, ExportService>();
 
             // 4. Formularios de la UI
             // Los formularios suelen ser transitorios (se crea uno nuevo cada vez que se necesita).
@@ -68,6 +70,7 @@ namespace CIF_DABLEU.UI
             services.AddTransient<LoginForm>();
             services.AddTransient<RegisterForm>();
             services.AddTransient<InvoiceForm>();
+            services.AddTransient<DashboardForm>();
         }
     }
 }

@@ -14,6 +14,6 @@ namespace CIF_DABLEU.BusinessLogic.Contracts
 
     public interface IInvoiceService
     {
-        Task CreateInvoiceAsync(int customerId, IEnumerable<InvoiceDetailDto> details);
+        Task<SaleInvoice> CreateInvoiceAsync(int customerId, IEnumerable<InvoiceDetailDto> details);
     }
 }
